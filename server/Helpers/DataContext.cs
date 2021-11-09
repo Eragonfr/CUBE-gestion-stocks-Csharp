@@ -15,8 +15,8 @@ namespace server.Helpers
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            // connect to sql server database
-            options.UsePostgresql(Configuration.GetConnectionString("serverDatabase"));
+            // connect to PostgreSQL server database
+            options.UseNpgsql(Configuration.GetConnectionString("serverDatabase"));
         }
 
         public DbSet<User> Users { get; set; }
