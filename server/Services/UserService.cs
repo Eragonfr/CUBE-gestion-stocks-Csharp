@@ -7,6 +7,8 @@ using server.Entities;
 using server.Helpers;
 using server.Models.Users;
 
+using System;
+
 namespace server.Services
 {
     public interface IUserService
@@ -21,12 +23,12 @@ namespace server.Services
 
     public class UserService : IUserService
     {
-        private DataContext _context;
+        private cubestocksContext _context;
         private IJwtUtils _jwtUtils;
         private readonly IMapper _mapper;
 
         public UserService(
-            DataContext context,
+            cubestocksContext context,
             IJwtUtils jwtUtils,
             IMapper mapper)
         {
@@ -40,11 +42,12 @@ namespace server.Services
             var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
 
             // validate
-            if (user == null || !BCryptNet.Verify(model.Password, user.PasswordHash))
+            if (user == null || !BCryptNet.Verify(model.Password, user.Password))
                 throw new AppException("Username or password is incorrect");
 
             // authentication successful
             var response = _mapper.Map<AuthenticateResponse>(user);
+			Console.WriteLine(response.Username);
             response.JwtToken = _jwtUtils.GenerateToken(user);
             return response;
         }
@@ -69,7 +72,7 @@ namespace server.Services
             var user = _mapper.Map<User>(model);
 
             // hash password
-            user.PasswordHash = BCryptNet.HashPassword(model.Password);
+            user.Password = BCryptNet.HashPassword(model.Password);
 
             // save user
             _context.Users.Add(user);
@@ -86,7 +89,7 @@ namespace server.Services
 
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
-                user.PasswordHash = BCryptNet.HashPassword(model.Password);
+                user.Password = BCryptNet.HashPassword(model.Password);
 
             // copy model to user and save
             _mapper.Map(model, user);

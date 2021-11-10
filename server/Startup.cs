@@ -24,7 +24,7 @@ namespace server {
 
         // add services to the DI container
         public void ConfigureServices(IServiceCollection services) {
-			services.AddDbContext<DataContext>();
+			services.AddDbContext<cubestocksContext>();
 
             services.AddCors();
             services.AddControllers();
@@ -47,15 +47,15 @@ namespace server {
         }
 
         // configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, cubestocksContext dataContext) {
 			// Enable swagger in dev env
 			 if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => {
-					c.SwaggerEndpoint("/swagger/v1/swagger.json", "server v1");
-				});
-			}
+			 }
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "server v1");
+			});
 
             // migrate any database changes on startup (includes initial db creation)
             dataContext.Database.Migrate();
