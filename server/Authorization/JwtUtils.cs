@@ -8,25 +8,20 @@ using System.Text;
 using server.Entities;
 using server.Helpers;
 
-namespace server.Authorization
-{
-    public interface IJwtUtils
-    {
+namespace server.Authorization {
+    public interface IJwtUtils {
         public string GenerateToken(User user);
         public int? ValidateToken(string token);
     }
 
-    public class JwtUtils : IJwtUtils
-    {
+    public class JwtUtils : IJwtUtils {
         private readonly AppSettings _appSettings;
 
-        public JwtUtils(IOptions<AppSettings> appSettings)
-        {
+        public JwtUtils(IOptions<AppSettings> appSettings) {
             _appSettings = appSettings.Value;
         }
 
-        public string GenerateToken(User user)
-        {
+        public string GenerateToken(User user) {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -40,17 +35,14 @@ namespace server.Authorization
             return tokenHandler.WriteToken(token);
         }
 
-        public int? ValidateToken(string token)
-        {
-            if (token == null) 
+        public int? ValidateToken(string token) {
+            if (token == null)
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            try
-            {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
+            try {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
@@ -64,9 +56,7 @@ namespace server.Authorization
 
                 // return user id from JWT token if validation successful
                 return userId;
-            }
-            catch
-            {
+            } catch {
                 // return null if validation fails
                 return null;
             }
